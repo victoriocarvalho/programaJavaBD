@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-d",
+                "target/classes",
+                "src/main/java/br/com/cadastroempregados/App.java",
+                "src/main/java/br/com/cadastroempregados/modelo/Empregado.java",
+                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java",
+                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryMemoria.java",
+                "src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java",
+                "src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Executar",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-cp",
+                "target/classes",
+                "br.com.cadastroempregados.App"
+            ],
+            "dependsOn": "Compilar",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
