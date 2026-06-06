@@ -3,15 +3,19 @@
     "tasks": [
         {
             "label": "Compilar",
-            "type": "shell",
+            "type": "process",
             "command": "javac",
             "args": [
                 "-d",
                 "target/classes",
+                "-cp",
+                "lib/*",
                 "src/main/java/br/com/cadastroempregados/App.java",
                 "src/main/java/br/com/cadastroempregados/modelo/Empregado.java",
                 "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java",
                 "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryMemoria.java",
+                "src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java",
+                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java",
                 "src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java",
                 "src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java"
             ],
@@ -20,11 +24,11 @@
         },
         {
             "label": "Executar",
-            "type": "shell",
+            "type": "process",
             "command": "java",
             "args": [
                 "-cp",
-                "target/classes",
+                "target/classes;lib/*",
                 "br.com.cadastroempregados.App"
             ],
             "dependsOn": "Compilar",
