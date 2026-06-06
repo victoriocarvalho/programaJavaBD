@@ -92,7 +92,7 @@ javac -d target/classes src/main/java/br/com/cadastroempregados/App.java src/mai
 java -cp target/classes br.com.cadastroempregados.App
 ```
 
-Tambem e possivel executar pela IDE abrindo a classe `App`.
+No VS Code, tambem e possivel executar pelo menu `Terminal > Run Task...` e selecionar a tarefa `Executar`.
 
 ## Proximo passo
 
