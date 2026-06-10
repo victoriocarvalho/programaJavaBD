@@ -5,6 +5,9 @@
             "label": "Compilar",
             "type": "process",
             "command": "javac",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "args": [
                 "-d",
                 "target/classes",
@@ -26,6 +29,9 @@
             "label": "Executar",
             "type": "process",
             "command": "java",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "args": [
                 "-cp",
                 "target/classes;lib/*",
