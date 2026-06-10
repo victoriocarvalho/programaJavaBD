@@ -3,6 +3,7 @@ package br.com.cadastroempregados.persistencia;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public class ConexaoFactory {
     }
 
     private Map<String, String> carregarEnv() {
-        Path caminho = Path.of(".env");
+        Path caminho = Paths.get(".env");
 
         if (!Files.exists(caminho)) {
             throw new IllegalStateException("Arquivo .env nao encontrado na raiz do projeto.");
