@@ -1,4 +1,4 @@
-# Cadastro de Empregados em Java
+# Acesso a Banco de Dados com Java
 
 Este projeto e um exemplo simples de programa Java organizado em 4 camadas para introduzir conceitos de persistencia de dados.
 
