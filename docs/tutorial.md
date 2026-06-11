@@ -98,7 +98,7 @@ No VS Code, tambem e possivel executar pelo menu `Terminal > Run Task...` e sele
 
 Na proxima etapa, poderemos melhorar a organizacao do tutorial e preparar a camada de persistencia para ser substituida por uma implementacao JDBC usando o banco de dados no Aiven.
 
-## Segunda etapa: persistencia com PostgreSQL no Aiven
+## Segunda Versão: persistencia com PostgreSQL no Aiven
 
 Agora estamos iniciando a segunda parte do projeto. O objetivo desta etapa e substituir a persistencia em memoria, feita com `ArrayList`, por persistencia em banco de dados PostgreSQL no Aiven.
 
@@ -214,7 +214,7 @@ try (Connection conexao = conexaoFactory.conectar();
 
 O uso de `PreparedStatement` evita montar SQL por concatenacao de texto e deixa o codigo mais seguro e organizado.
 
-## Compilando e executando a segunda etapa
+## Compilando e executando a segunda versão
 
 Para obter exatamente esta segunda versao do projeto, mesmo depois que o repositorio tiver novas versoes, use:
 
@@ -224,7 +224,7 @@ cd programaJavaBD
 git checkout v2-persistenciaBD
 ```
 
-Depois de colocar o driver JDBC na pasta `lib` e criar o arquivo `.env` a partir do `.env.example`, ajustando os valores das variaveis, compile e execute:
+Depois de criar o arquivo `.env` a partir do `.env.example`, ajustando os valores das variaveis, compile e execute:
 
 ```powershell
 javac -d target/classes -cp "lib/*" src/main/java/br/com/cadastroempregados/App.java src/main/java/br/com/cadastroempregados/modelo/Empregado.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java
