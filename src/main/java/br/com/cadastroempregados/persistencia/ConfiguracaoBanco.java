@@ -4,36 +4,31 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConexaoFactory {
+public class ConfiguracaoBanco {
     private static final String ENV_URL = "APP_DB_URL";
     private static final String ENV_USUARIO = "APP_DB_USUARIO";
     private static final String ENV_SENHA = "APP_DB_SENHA";
+
     private final Map<String, String> configuracoes;
 
-    public ConexaoFactory() {
+    public ConfiguracaoBanco() {
         this.configuracoes = carregarEnv();
     }
 
-    public Connection conectar() {
-        String url = lerConfiguracaoObrigatoria(ENV_URL);
-        String usuario = lerConfiguracaoObrigatoria(ENV_USUARIO);
-        String senha = lerConfiguracaoObrigatoria(ENV_SENHA);
+    public String getUrl() {
+        return lerConfiguracaoObrigatoria(ENV_URL);
+    }
 
-        try {
-            Class.forName("org.postgresql.Driver");
-            return DriverManager.getConnection(url, usuario, senha);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Driver JDBC do PostgreSQL nao encontrado.", e);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Nao foi possivel conectar ao banco de dados.", e);
-        }
+    public String getUsuario() {
+        return lerConfiguracaoObrigatoria(ENV_USUARIO);
+    }
+
+    public String getSenha() {
+        return lerConfiguracaoObrigatoria(ENV_SENHA);
     }
 
     private String lerConfiguracaoObrigatoria(String nome) {

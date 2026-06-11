@@ -1,4 +1,4 @@
-# Cadastro de Empregados com Java
+﻿# Cadastro de Empregados com Java
 
 Este tutorial conduz a criacao de um programa Java em camadas. A primeira versao usa uma lista em memoria. Depois, a camada de persistencia sera substituida por acesso a banco de dados com JDBC.
 
@@ -98,7 +98,7 @@ No VS Code, tambem e possivel executar pelo menu `Terminal > Run Task...` e sele
 
 Na proxima etapa, poderemos melhorar a organizacao do tutorial e preparar a camada de persistencia para ser substituida por uma implementacao JDBC usando o banco de dados no Aiven.
 
-## Segunda Versão: persistencia com PostgreSQL no Aiven
+## Segunda VersÃ£o: persistencia com PostgreSQL no Aiven
 
 Agora estamos iniciando a segunda parte do projeto. O objetivo desta etapa e substituir a persistencia em memoria, feita com `ArrayList`, por persistencia em banco de dados PostgreSQL no Aiven.
 
@@ -214,7 +214,7 @@ try (Connection conexao = conexaoFactory.conectar();
 
 O uso de `PreparedStatement` evita montar SQL por concatenacao de texto e deixa o codigo mais seguro e organizado.
 
-## Compilando e executando a segunda versão
+## Compilando e executando a segunda versÃ£o
 
 Para obter exatamente esta segunda versao do projeto, mesmo depois que o repositorio tiver novas versoes, use:
 
@@ -233,3 +233,213 @@ java -cp "target/classes;lib/*" br.com.cadastroempregados.App
 ```
 
 No VS Code, tambem e possivel executar pelo menu `Terminal > Run Task...` e selecionar a tarefa `Executar`.
+
+## Terceira Versao: persistencia com Hibernate
+
+Na terceira versao, continuamos usando PostgreSQL no Aiven, mas a camada de persistencia deixa de escrever SQL manualmente com JDBC na maior parte do codigo. Agora usamos Hibernate, uma ferramenta ORM.
+
+ORM significa mapeamento objeto-relacional. Na pratica, isso permite mapear uma classe Java para uma tabela do banco de dados. Assim, a aplicacao trabalha com objetos `Empregado`, e o Hibernate se encarrega de transformar essas operacoes em comandos SQL.
+
+A divisao em camadas continua a mesma:
+
+- `modelo`: representa os dados e agora tambem contem as anotacoes de mapeamento.
+- `persistencia`: cria o `EntityManager` e implementa as operacoes usando Hibernate.
+- `aplicacao`: continua validando os dados antes de salvar.
+- `ui`: continua apenas chamando a camada de aplicacao.
+
+Essa e a principal vantagem de ter criado a interface `EmpregadoRepository`: a interface grafica e a classe `EmpregadoService` nao precisam saber se os dados estao sendo salvos com `ArrayList`, JDBC ou Hibernate.
+
+## Por que usar Maven nesta versao
+
+Nas versoes anteriores, o projeto era compilado diretamente com `javac`. Para JDBC isso ainda era simples, porque bastava adicionar o driver do PostgreSQL em `lib`.
+
+Com Hibernate, isso muda. O Hibernate depende de varias outras bibliotecas. Baixar cada `.jar` manualmente deixaria o projeto dificil de montar e facil de quebrar. Por isso, nesta etapa o projeto passa a usar Maven.
+
+O arquivo `pom.xml` declara as dependencias:
+
+```xml
+<dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>7.4.1.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.7.11</version>
+</dependency>
+```
+
+O Maven baixa essas bibliotecas automaticamente durante a compilacao.
+
+## Entidade Empregado
+
+A classe `Empregado` agora e uma entidade JPA:
+
+```java
+@Entity
+@Table(name = "empregado")
+public class Empregado {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 100)
+    private String nome;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String cpf;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal salario;
+
+    protected Empregado() {
+    }
+}
+```
+
+As principais anotacoes sao:
+
+- `@Entity`: informa que a classe sera persistida no banco.
+- `@Table`: define o nome da tabela.
+- `@Id`: indica a chave primaria.
+- `@GeneratedValue`: informa que o banco gera o valor do `id`.
+- `@Column`: configura detalhes das colunas.
+
+O construtor vazio `protected` e necessario para o Hibernate criar objetos ao consultar o banco.
+
+## Configuracao do Hibernate
+
+O arquivo `src/main/resources/META-INF/persistence.xml` define a unidade de persistencia:
+
+```xml
+<persistence-unit name="cadastro-empregados" transaction-type="RESOURCE_LOCAL">
+    <class>br.com.cadastroempregados.modelo.Empregado</class>
+    <properties>
+        <property name="hibernate.hbm2ddl.auto" value="update"/>
+        <property name="hibernate.show_sql" value="true"/>
+        <property name="hibernate.format_sql" value="true"/>
+    </properties>
+</persistence-unit>
+```
+
+A propriedade `hibernate.hbm2ddl.auto` com valor `update` permite que o Hibernate crie ou atualize a tabela conforme o mapeamento da entidade.
+
+As credenciais do banco continuam fora do codigo. O arquivo `.env` permanece igual:
+
+```text
+APP_DB_URL=jdbc:postgresql://HOST:PORTA/NOME_DO_BANCO?sslmode=require
+APP_DB_USUARIO=USUARIO
+APP_DB_SENHA=SENHA
+```
+
+A classe `ConfiguracaoBanco` le esse arquivo. A classe `JpaFactory` usa esses valores para criar o `EntityManagerFactory`:
+
+```java
+Map<String, String> propriedades = new HashMap<>();
+propriedades.put("jakarta.persistence.jdbc.url", configuracaoBanco.getUrl());
+propriedades.put("jakarta.persistence.jdbc.user", configuracaoBanco.getUsuario());
+propriedades.put("jakarta.persistence.jdbc.password", configuracaoBanco.getSenha());
+propriedades.put("jakarta.persistence.jdbc.driver", "org.postgresql.Driver");
+
+this.entityManagerFactory = Persistence.createEntityManagerFactory(
+        "cadastro-empregados",
+        propriedades
+);
+```
+
+## Repositorio com Hibernate
+
+A nova classe `EmpregadoRepositoryHibernate` implementa a mesma interface `EmpregadoRepository`.
+
+Para inserir:
+
+```java
+EntityManager entityManager = jpaFactory.criarEntityManager();
+EntityTransaction transaction = entityManager.getTransaction();
+
+try {
+    transaction.begin();
+    entityManager.persist(empregado);
+    transaction.commit();
+} catch (PersistenceException e) {
+    if (transaction.isActive()) {
+        transaction.rollback();
+    }
+    throw new IllegalStateException("Nao foi possivel inserir o empregado.", e);
+} finally {
+    entityManager.close();
+}
+```
+
+O metodo `persist` substitui o `insert into empregado (...) values (...)` escrito manualmente na versao JDBC.
+
+Para listar:
+
+```java
+return entityManager
+        .createQuery("select e from Empregado e order by e.nome", Empregado.class)
+        .getResultList();
+```
+
+Essa consulta usa JPQL. Ela parece SQL, mas consulta entidades e atributos Java. Por isso usamos `Empregado` e `e.nome`, e nao diretamente o nome da tabela e das colunas.
+
+Para verificar CPF duplicado:
+
+```java
+Long quantidade = entityManager
+        .createQuery("select count(e) from Empregado e where e.cpf = :cpf", Long.class)
+        .setParameter("cpf", cpf)
+        .getSingleResult();
+```
+
+## Inicializacao da aplicacao
+
+Na classe `App`, a implementacao usada agora e a do Hibernate:
+
+```java
+JpaFactory jpaFactory = new JpaFactory(new ConfiguracaoBanco());
+Runtime.getRuntime().addShutdownHook(new Thread(jpaFactory::fechar));
+
+EmpregadoRepositoryHibernate repository = new EmpregadoRepositoryHibernate(jpaFactory);
+EmpregadoService service = new EmpregadoService(repository);
+EmpregadoFrame frame = new EmpregadoFrame(service);
+frame.setVisible(true);
+```
+
+O `shutdownHook` fecha o `EntityManagerFactory` quando a aplicacao termina.
+
+## Compilando e executando a terceira versao
+
+Para esta versao, instale o Maven e confira se ele esta disponivel no terminal:
+
+```powershell
+mvn -version
+```
+
+Depois de criar o arquivo `.env` a partir do `.env.example`, compile:
+
+```powershell
+mvn compile
+```
+
+Execute:
+
+```powershell
+mvn exec:java
+```
+
+No VS Code, tambem e possivel executar pelo menu `Terminal > Run Task...` e selecionar a tarefa `Executar`.
+
+## Comparacao entre JDBC e Hibernate
+
+Na versao JDBC, a classe `EmpregadoRepositoryPostgres` precisava abrir conexao, criar `PreparedStatement`, escrever SQL e transformar cada linha do `ResultSet` em um objeto.
+
+Na versao Hibernate, a classe `EmpregadoRepositoryHibernate` trabalha diretamente com entidades:
+
+- `persist` salva um objeto.
+- JPQL consulta objetos.
+- transacoes continuam existindo, mas o codigo de mapeamento fica menor.
+
+O JDBC ainda aparece indiretamente, porque o Hibernate usa o driver PostgreSQL por baixo. A diferenca e que agora a aplicacao nao precisa escrever manualmente a maior parte do codigo repetitivo de acesso ao banco.

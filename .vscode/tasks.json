@@ -4,22 +4,12 @@
         {
             "label": "Compilar",
             "type": "process",
-            "command": "javac",
+            "command": "mvn",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "args": [
-                "-d",
-                "target/classes",
-                "-cp",
-                "lib/*",
-                "src/main/java/br/com/cadastroempregados/App.java",
-                "src/main/java/br/com/cadastroempregados/modelo/Empregado.java",
-                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java",
-                "src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java",
-                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java",
-                "src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java",
-                "src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java"
+                "compile"
             ],
             "group": "build",
             "problemMatcher": []
@@ -27,14 +17,12 @@
         {
             "label": "Executar",
             "type": "process",
-            "command": "java",
+            "command": "mvn",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "args": [
-                "-cp",
-                "target/classes;lib/*",
-                "br.com.cadastroempregados.App"
+                "exec:java"
             ],
             "dependsOn": "Compilar",
             "group": {
