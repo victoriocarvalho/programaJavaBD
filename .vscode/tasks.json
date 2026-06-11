@@ -16,7 +16,6 @@
                 "src/main/java/br/com/cadastroempregados/App.java",
                 "src/main/java/br/com/cadastroempregados/modelo/Empregado.java",
                 "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java",
-                "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryMemoria.java",
                 "src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java",
                 "src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java",
                 "src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java",

@@ -227,7 +227,7 @@ git checkout v2-persistenciaBD
 Depois de colocar o driver JDBC na pasta `lib` e criar o arquivo `.env` a partir do `.env.example`, ajustando os valores das variaveis, compile e execute:
 
 ```powershell
-javac -d target/classes -cp "lib/*" src/main/java/br/com/cadastroempregados/App.java src/main/java/br/com/cadastroempregados/modelo/Empregado.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryMemoria.java src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java
+javac -d target/classes -cp "lib/*" src/main/java/br/com/cadastroempregados/App.java src/main/java/br/com/cadastroempregados/modelo/Empregado.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepository.java src/main/java/br/com/cadastroempregados/persistencia/ConexaoFactory.java src/main/java/br/com/cadastroempregados/persistencia/EmpregadoRepositoryPostgres.java src/main/java/br/com/cadastroempregados/aplicacao/EmpregadoService.java src/main/java/br/com/cadastroempregados/ui/EmpregadoFrame.java
 
 java -cp "target/classes;lib/*" br.com.cadastroempregados.App
 ```
