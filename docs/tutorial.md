@@ -412,6 +412,14 @@ O `shutdownHook` fecha o `EntityManagerFactory` quando a aplicacao termina.
 
 ## Compilando e executando a terceira versao
 
+Para obter exatamente esta terceira versao do projeto, mesmo depois que o repositorio tiver novas versoes, use:
+
+```bash
+git clone https://github.com/victoriocarvalho/programaJavaBD.git
+cd programaJavaBD
+git checkout v3-persistenciaJPA
+```
+
 Para esta versao, instale o Maven e confira se ele esta disponivel no terminal:
 
 ```powershell
